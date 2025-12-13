@@ -16,7 +16,8 @@
     "@esri/calcite-ui-icons": "^3.24.8",
     "echarts": "^5.5.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-joyride": "^2.9.3"
   },
   "devDependencies": {
     "typescript": "^5",
