@@ -374,7 +374,7 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
         </div>
       </div>
 
-      <div className="absolute left-4 right-4 bottom-4 pointer-events-none">
+      <div className="absolute left-4 right-4 bottom-4 pointer-events-none" id="tour-time-slider">
         <div className="pointer-events-auto rounded-2xl bg-slate-950/85 border border-white/10 shadow-lg p-3 space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
