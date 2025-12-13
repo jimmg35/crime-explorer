@@ -82,8 +82,12 @@ const CustomTooltip = ({
       <div className="text-xs uppercase tracking-wide text-slate-400">
         Step {index + 1} of {size}
       </div>
-      {step.title && <h3 className="mt-1 text-lg font-semibold">{step.title}</h3>}
-      {step.content && <p className="mt-2 text-sm text-slate-200">{step.content}</p>}
+      {step.title && (
+        <h3 className="mt-1 text-lg font-semibold">{step.title}</h3>
+      )}
+      {step.content && (
+        <p className="mt-2 text-sm text-slate-200">{step.content}</p>
+      )}
 
       <label className="mt-3 flex items-center gap-2 text-xs text-slate-200">
         <input
@@ -138,6 +142,7 @@ const InteractiveTour = () => {
 
   const handleCallback = (data: CallBackProps) => {
     const { status, index, type, action } = data
+    // @ts-expect-error tesetsting
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       setRun(false)
       setStepIndex(0)
