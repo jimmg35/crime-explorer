@@ -151,6 +151,7 @@ const InteractiveTour = () => {
       }
       return
     }
+    // @ts-expect-error tesetsting
     if (type === 'step:after' || type === 'target:notFound') {
       const delta = action === 'prev' ? -1 : 1
       setStepIndex(Math.max(0, Math.min(index + delta, steps.length - 1)))
