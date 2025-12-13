@@ -1,15 +1,14 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-
 import { filterFeatures } from '@/lib/data/aggregations'
 import { CrimeDataset, ExtentBounds } from '@/lib/data/types'
 import useI18n from '@/lib/i18n/useI18n'
 import { useAppState } from '@/lib/state/AppStateContext'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import FiltersPanel from './filters/FiltersPanel'
-import ChartsPanel from './charts/ChartsPanel'
 import LanguageSwitch from './LanguageSwitch'
+import ChartsPanel from './charts/ChartsPanel'
+import FiltersPanel from './filters/FiltersPanel'
 import KpiCards from './kpi/KpiCards'
 
 const MapPanel = dynamic(() => import('./map/MapPanel'), {
@@ -65,10 +64,15 @@ const CrimeDashboard = ({ data }: Props) => {
           <p className="text-sm text-slate-400">{t('app.subtitle')}</p>
         </div>
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 text-xs text-slate-100 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_0_6px_rgba(74,222,128,0.15)]"></span>
+          <a
+            href="https://sdsc.fsu.edu/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-green-100 bg-green-400/10 border border-green-400/50 rounded-full px-3 py-1 hover:bg-green-400/20 transition-colors"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_0_4px_rgba(74,222,128,0.15)]"></span>
             Spatial Data Science Center @ Florida State University
-          </div>
+          </a>
           <LanguageSwitch />
         </div>
       </header>
