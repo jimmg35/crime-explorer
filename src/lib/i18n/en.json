@@ -1,0 +1,47 @@
+{
+  "app.title": "Tallahassee Crime Explorer",
+  "app.subtitle": "Map, time, and charts for public incidents",
+
+  "lang.label": "Language",
+  "lang.en": "English",
+  "lang.es": "Español",
+
+  "actions.reset": "Reset",
+  "actions.play": "Play",
+  "actions.pause": "Pause",
+  "actions.day": "Day",
+  "actions.week": "Week",
+  "actions.month": "Month",
+  "actions.year": "Year",
+  "actions.extent": "Use map extent",
+  "actions.basemap": "Basemap",
+  "actions.copyLink": "Copy link",
+
+  "filters.categories": "Incident types",
+  "filters.sheets": "Source / year",
+  "filters.extent": "Only within current map view",
+  "filters.reset": "Reset filters",
+  "filters.noOptions": "No options",
+
+  "map.loading": "Loading map and data...",
+  "map.basemap": "Basemap",
+  "map.heatmap": "Heatmap",
+  "map.clusters": "Clusters",
+  "map.popup.offense": "Offense",
+  "map.popup.time": "Date / time",
+  "map.popup.sheet": "Source sheet",
+  "map.popup.address": "Address",
+
+  "charts.timeSeries": "Incidents over time",
+  "charts.topCategories": "Top categories",
+  "charts.hourly": "Time of day",
+  "charts.noData": "No incidents match the current filters.",
+
+  "kpi.total": "Incidents",
+  "kpi.categories": "Categories",
+  "kpi.sheets": "Sheets",
+  "kpi.range": "Date range",
+
+  "errors.load": "Unable to load incidents.",
+  "errors.empty": "Dataset has no timestamp values."
+}

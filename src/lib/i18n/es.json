@@ -1,0 +1,47 @@
+{
+  "app.title": "Explorador de delitos de Tallahassee",
+  "app.subtitle": "Mapa, tiempo y gráficos de incidentes públicos",
+
+  "lang.label": "Idioma",
+  "lang.en": "Inglés",
+  "lang.es": "Español",
+
+  "actions.reset": "Restablecer",
+  "actions.play": "Reproducir",
+  "actions.pause": "Pausa",
+  "actions.day": "Día",
+  "actions.week": "Semana",
+  "actions.month": "Mes",
+  "actions.year": "Año",
+  "actions.extent": "Usar extensión del mapa",
+  "actions.basemap": "Mapa base",
+  "actions.copyLink": "Copiar enlace",
+
+  "filters.categories": "Tipos de incidente",
+  "filters.sheets": "Fuente / año",
+  "filters.extent": "Solo dentro de la vista del mapa",
+  "filters.reset": "Restablecer filtros",
+  "filters.noOptions": "Sin opciones",
+
+  "map.loading": "Cargando mapa y datos...",
+  "map.basemap": "Mapa base",
+  "map.heatmap": "Mapa de calor",
+  "map.clusters": "Agrupación",
+  "map.popup.offense": "Delito",
+  "map.popup.time": "Fecha y hora",
+  "map.popup.sheet": "Hoja de origen",
+  "map.popup.address": "Dirección",
+
+  "charts.timeSeries": "Incidentes en el tiempo",
+  "charts.topCategories": "Categorías principales",
+  "charts.hourly": "Hora del día",
+  "charts.noData": "No hay incidentes para los filtros actuales.",
+
+  "kpi.total": "Incidentes",
+  "kpi.categories": "Categorías",
+  "kpi.sheets": "Hojas",
+  "kpi.range": "Rango de fechas",
+
+  "errors.load": "No se pudieron cargar los incidentes.",
+  "errors.empty": "El conjunto de datos no tiene valores de fecha y hora."
+}
