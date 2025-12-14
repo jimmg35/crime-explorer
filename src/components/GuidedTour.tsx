@@ -6,8 +6,7 @@ import { createPortal } from 'react-dom'
 const steps = [
   {
     title: 'Map view',
-    body:
-      'Pan, zoom, and click features to see where incidents cluster. Switch basemaps with the control inside the map.',
+    body: 'Pan, zoom, and click features to see where incidents cluster. Switch basemaps with the control inside the map.',
     tips: [
       'Use the mouse wheel or trackpad to zoom.',
       'Draw attention to a neighborhood by zooming and using the "Current view" filter mode.'
@@ -15,21 +14,27 @@ const steps = [
   },
   {
     title: 'Filters',
-    body:
-      'Focus on topics by selecting categories or data sheets. Combine multiple filters to narrow the results.',
-    tips: ['Click a chip to toggle it on/off.', 'Reset returns all data and clears the map filter.']
+    body: 'Focus on topics by selecting categories or data sheets. Combine multiple filters to narrow the results.',
+    tips: [
+      'Click a chip to toggle it on/off.',
+      'Reset returns all data and clears the map filter.'
+    ]
   },
   {
     title: 'Timeline',
-    body:
-      'Adjust the time window to explore trends. Pick the granularity (month, week, etc.) to change how charts bucket the data.',
-    tips: ['Drag the handles to change the time range.', 'Use smaller steps for short-term events.']
+    body: 'Adjust the time window to explore trends. Pick the granularity (month, week, etc.) to change how charts bucket the data.',
+    tips: [
+      'Drag the handles to change the time range.',
+      'Use smaller steps for short-term events.'
+    ]
   },
   {
     title: 'Charts',
-    body:
-      'Use the charts to compare categories and see when activity spikes. Clicking a category toggles it as a filter.',
-    tips: ['Hover bars/lines to see exact values.', 'Click a legend item to include/exclude it.']
+    body: 'Use the charts to compare categories and see when activity spikes. Clicking a category toggles it as a filter.',
+    tips: [
+      'Hover bars/lines to see exact values.',
+      'Click a legend item to include/exclude it.'
+    ]
   }
 ]
 
@@ -41,7 +46,8 @@ const GuidedTour = () => {
     if (!open) return
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false)
-      if (event.key === 'ArrowRight') setStep((prev) => Math.min(prev + 1, steps.length - 1))
+      if (event.key === 'ArrowRight')
+        setStep((prev) => Math.min(prev + 1, steps.length - 1))
       if (event.key === 'ArrowLeft') setStep((prev) => Math.max(prev - 1, 0))
     }
     window.addEventListener('keydown', handleKey)
@@ -75,7 +81,9 @@ const GuidedTour = () => {
                   <div className="text-xs uppercase tracking-wide text-slate-400">
                     Step {step + 1} of {steps.length}
                   </div>
-                  <h2 className="text-xl font-semibold text-white">{steps[step].title}</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    {steps[step].title}
+                  </h2>
                 </div>
                 <button
                   type="button"

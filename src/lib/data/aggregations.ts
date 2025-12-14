@@ -1,5 +1,5 @@
 import { FilterState } from '../state/types'
-import { CrimeFeature, ExtentBounds, TimeStep, TimeExtent } from './types'
+import { CrimeFeature, ExtentBounds, TimeExtent, TimeStep } from './types'
 
 const startOfUnit = (date: Date, step: TimeStep): Date => {
   const d = new Date(date)

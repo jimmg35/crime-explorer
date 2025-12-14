@@ -1,6 +1,5 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import {
   createContext,
   useCallback,
@@ -10,7 +9,7 @@ import {
   useRef,
   useState
 } from 'react'
-
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { DEFAULT_BASEMAP } from '../data/config'
 import { TimeExtent, TimeStep } from '../data/types'
 import { Lang, SUPPORTED_LANGS } from '../i18n'
@@ -219,25 +218,25 @@ export const AppStateProvider = ({
     }))
   }, [])
 
-  const setExtentMode = useCallback(
-    (extentMode: FilterState['extentMode']) => {
-      setState((prev) => ({
-        ...prev,
-        filters: { ...prev.filters, extentMode }
-      }))
-    },
-    []
-  )
+  const setExtentMode = useCallback((extentMode: FilterState['extentMode']) => {
+    setState((prev) => ({
+      ...prev,
+      filters: { ...prev.filters, extentMode }
+    }))
+  }, [])
 
-  const setTimeStep = useCallback((timeStep: TimeStep) => {
-    setState((prev) => {
-      let nextExtent = prev.timeExtent
-      if (timeStep === 'month') {
-        nextExtent = twelveMonthWindowFromStart(fullTimeExtent)
-      }
-      return { ...prev, timeStep, timeExtent: nextExtent }
-    })
-  }, [fullTimeExtent])
+  const setTimeStep = useCallback(
+    (timeStep: TimeStep) => {
+      setState((prev) => {
+        let nextExtent = prev.timeExtent
+        if (timeStep === 'month') {
+          nextExtent = twelveMonthWindowFromStart(fullTimeExtent)
+        }
+        return { ...prev, timeStep, timeExtent: nextExtent }
+      })
+    },
+    [fullTimeExtent]
+  )
 
   const resetFilters = useCallback(() => {
     setState((prev) => ({

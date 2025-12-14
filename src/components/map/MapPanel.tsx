@@ -21,8 +21,8 @@ import FeatureReductionCluster from '@arcgis/core/layers/support/FeatureReductio
 import UniqueValueRenderer from '@arcgis/core/renderers/UniqueValueRenderer.js'
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol.js'
 import MapView from '@arcgis/core/views/MapView.js'
-import TimeSlider from '@arcgis/core/widgets/TimeSlider.js'
 import Search from '@arcgis/core/widgets/Search.js'
+import TimeSlider from '@arcgis/core/widgets/TimeSlider.js'
 
 type Props = {
   data: CrimeDataset
@@ -365,11 +365,13 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
 
   useEffect(() => {
     if (!layerViewRef.current) return
+    const lv = layerViewRef.current as unknown as {
+      effect?: __esri.FeatureEffect
+      featureEffect?: __esri.FeatureEffect
+    }
     if (!legendHover) {
-      layerViewRef.current.effect = undefined
-      // Some renderers expect featureEffect; reset both to be safe.
-      // @ts-expect-error ArcGIS type narrowing
-      layerViewRef.current.featureEffect = undefined
+      lv.effect = undefined
+      lv.featureEffect = undefined
       return
     }
     const effect = {
@@ -380,13 +382,11 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
         'brightness(120%) saturate(140%) drop-shadow(0 0 6px rgba(56,189,248,0.35))',
       excludedEffect: 'opacity(35%)'
     }
-    layerViewRef.current.effect = {
-      ...effect
-    }
-    // @ts-expect-error ArcGIS type narrowing
-    layerViewRef.current.featureEffect = {
-      ...effect
-    }
+
+    // @ts-expect-error tesetsting
+    lv.effect = { ...effect }
+    // @ts-expect-error tesetsting
+    lv.featureEffect = { ...effect }
   }, [legendHover])
 
   useEffect(() => {
@@ -447,7 +447,10 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
         </div>
       </div>
 
-      <div className="absolute left-4 right-4 bottom-4 pointer-events-none" id="tour-time-slider">
+      <div
+        className="absolute left-4 right-4 bottom-4 pointer-events-none"
+        id="tour-time-slider"
+      >
         <div className="pointer-events-auto rounded-2xl bg-slate-950/85 border border-white/10 shadow-lg p-3 space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -480,7 +483,9 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
         </div>
 
         <div className="pointer-events-auto rounded-xl bg-slate-950/85 border border-white/10 shadow-lg p-3 space-y-2">
-          <div className="text-xs uppercase tracking-wide text-slate-400">Legend</div>
+          <div className="text-xs uppercase tracking-wide text-slate-400">
+            Legend
+          </div>
           <div className="max-h-48 overflow-y-auto divide-y divide-white/5">
             {legendItems.map((item) => (
               <div
