@@ -18,28 +18,41 @@ const EChart = ({ option, height = 260, className, onEvents }: Props) => {
   const clickHandler = onEvents?.click
 
   useEffect(() => {
-    if (!containerRef.current) return
-    chartRef.current = echarts.init(containerRef.current, undefined, {
+    if (!containerRef.current || chartRef.current) return
+
+    const chart = echarts.init(containerRef.current, undefined, {
       renderer: 'canvas'
     })
-    const resize = () => chartRef.current?.resize()
+    chartRef.current = chart
+
+    const resize = () => chart.resize()
     window.addEventListener('resize', resize)
-    const chart = chartRef.current
-    if (clickHandler) {
-      chart?.on('click', clickHandler)
-    }
     return () => {
       window.removeEventListener('resize', resize)
+      chart.dispose()
+      chartRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    const chart = chartRef.current
+    if (!chart) return
+
+    if (clickHandler) {
+      chart.on('click', clickHandler)
+    }
+
+    return () => {
       if (clickHandler) {
-        chart?.off('click', clickHandler)
+        chart.off('click', clickHandler)
       }
-      chart?.dispose()
     }
   }, [clickHandler])
 
   useEffect(() => {
     if (!chartRef.current) return
     chartRef.current.setOption(option, true)
+    chartRef.current.resize()
   }, [option])
 
   return (
