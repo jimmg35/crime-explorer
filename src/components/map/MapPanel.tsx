@@ -22,6 +22,7 @@ import UniqueValueRenderer from '@arcgis/core/renderers/UniqueValueRenderer.js'
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol.js'
 import MapView from '@arcgis/core/views/MapView.js'
 import TimeSlider from '@arcgis/core/widgets/TimeSlider.js'
+import Search from '@arcgis/core/widgets/Search.js'
 
 type Props = {
   data: CrimeDataset
@@ -124,17 +125,37 @@ const timeUnit = (step: ReturnType<typeof useAppState>['state']['timeStep']) =>
 const MapPanel = ({ data, onExtentChange }: Props) => {
   const mapRef = useRef<HTMLDivElement | null>(null)
   const timeSliderRef = useRef<HTMLDivElement | null>(null)
+  const searchRef = useRef<HTMLDivElement | null>(null)
   const mapObjRef = useRef<Map | null>(null)
   const viewRef = useRef<MapView | null>(null)
   const layerRef = useRef<GeoJSONLayer | null>(null)
   const layerViewRef = useRef<__esri.GeoJSONLayerView | null>(null)
   const sliderRef = useRef<TimeSlider | null>(null)
+  const searchWidgetRef = useRef<Search | null>(null)
   const extentFrame = useRef<number | null>(null)
   const initializedZoom = useRef(false)
+  const statusTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { state, setBasemap, setTimeExtent, setTimeStep } = useAppState()
   const { t } = useI18n()
 
   const [clusters, setClusters] = useState(true)
+  const [status, setStatus] = useState<string | null>(null)
+  const [legendHover, setLegendHover] = useState<string | null>(null)
+
+  const legendItems = useMemo(
+    () =>
+      data.categories.map((name, idx) => ({
+        name,
+        color: palette[idx % palette.length]
+      })),
+    [data.categories]
+  )
+
+  const showStatus = useCallback((message: string) => {
+    if (statusTimeout.current) clearTimeout(statusTimeout.current)
+    setStatus(message)
+    statusTimeout.current = setTimeout(() => setStatus(null), 2200)
+  }, [])
 
   const popupTemplate = useMemo(
     () =>
@@ -178,6 +199,13 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
       geometry
     }
   }, [state.filters, state.timeExtent])
+
+  useEffect(
+    () => () => {
+      if (statusTimeout.current) clearTimeout(statusTimeout.current)
+    },
+    []
+  )
 
   useEffect(() => {
     if (!mapRef.current) return
@@ -275,8 +303,17 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
     mapObjRef.current = map
     viewRef.current = view
     layerRef.current = layer
+    if (searchRef.current) {
+      searchWidgetRef.current = new Search({
+        view,
+        container: searchRef.current,
+        popupEnabled: false,
+        resultGraphicEnabled: true
+      })
+    }
 
     return () => {
+      searchWidgetRef.current?.destroy()
       sliderRef.current?.destroy()
       view.destroy()
       map.removeAll()
@@ -313,11 +350,44 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
 
   useEffect(() => {
     if (!layerRef.current) return
+    const enableClusters = clusters && !legendHover
     layerRef.current.renderer = buildCategoryRenderer(data.categories)
-    layerRef.current.featureReduction = clusters
+    layerRef.current.featureReduction = enableClusters
       ? buildClusterReduction()
       : undefined
-  }, [clusters, data.categories])
+
+    if (legendHover && clusters) {
+      showStatus('Clusters paused for highlight')
+    } else if (!legendHover) {
+      showStatus(enableClusters ? 'Clusters on' : 'Clusters off')
+    }
+  }, [clusters, data.categories, legendHover, showStatus])
+
+  useEffect(() => {
+    if (!layerViewRef.current) return
+    if (!legendHover) {
+      layerViewRef.current.effect = undefined
+      // Some renderers expect featureEffect; reset both to be safe.
+      // @ts-expect-error ArcGIS type narrowing
+      layerViewRef.current.featureEffect = undefined
+      return
+    }
+    const effect = {
+      filter: {
+        where: `${CATEGORY_FIELD} IN (${sanitizeSqlList([legendHover])})`
+      },
+      includedEffect:
+        'brightness(120%) saturate(140%) drop-shadow(0 0 6px rgba(56,189,248,0.35))',
+      excludedEffect: 'opacity(35%)'
+    }
+    layerViewRef.current.effect = {
+      ...effect
+    }
+    // @ts-expect-error ArcGIS type narrowing
+    layerViewRef.current.featureEffect = {
+      ...effect
+    }
+  }, [legendHover])
 
   useEffect(() => {
     if (!viewRef.current) return
@@ -351,7 +421,10 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
           <select
             className="bg-slate-900 focus:outline-none text-white"
             value={state.basemap}
-            onChange={(e) => setBasemap(e.target.value)}
+            onChange={(e) => {
+              setBasemap(e.target.value)
+              showStatus(`Basemap: ${e.target.value}`)
+            }}
           >
             {basemaps.map((b) => (
               <option
@@ -400,6 +473,42 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
           ></div>
         </div>
       </div>
+
+      <div className="absolute right-4 top-4 flex flex-col gap-3 pointer-events-none w-72 max-w-[80vw]">
+        <div className="pointer-events-auto rounded-xl border border-white/15 bg-slate-950/85 shadow-lg">
+          <div ref={searchRef} className="p-2"></div>
+        </div>
+
+        <div className="pointer-events-auto rounded-xl bg-slate-950/85 border border-white/10 shadow-lg p-3 space-y-2">
+          <div className="text-xs uppercase tracking-wide text-slate-400">Legend</div>
+          <div className="max-h-48 overflow-y-auto divide-y divide-white/5">
+            {legendItems.map((item) => (
+              <div
+                key={item.name}
+                className="flex items-center gap-2 py-1 text-sm text-slate-100 hover:bg-white/5 cursor-pointer"
+                onMouseEnter={() => setLegendHover(item.name)}
+                onMouseLeave={() => setLegendHover(null)}
+              >
+                <span
+                  className="w-3.5 h-3.5 rounded-full border border-slate-900 shadow"
+                  style={{ backgroundColor: item.color }}
+                ></span>
+                <span className="truncate" title={item.name}>
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {status && (
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-4 pointer-events-none">
+          <div className="pointer-events-auto rounded-full bg-slate-950/90 border border-white/10 px-4 py-2 text-xs font-semibold text-slate-100 shadow-lg">
+            {status}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
