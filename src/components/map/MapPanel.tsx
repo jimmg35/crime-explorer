@@ -141,6 +141,9 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
   const [clusters, setClusters] = useState(true)
   const [status, setStatus] = useState<string | null>(null)
   const [legendHover, setLegendHover] = useState<string | null>(null)
+  const [mobileLegendOpen, setMobileLegendOpen] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const [sliderOpen, setSliderOpen] = useState(true)
 
   const legendItems = useMemo(
     () =>
@@ -412,10 +415,10 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
   }, [popupTemplate])
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full min-h-[360px] lg:min-h-0">
       <div ref={mapRef} className="absolute inset-0" />
 
-      <div className="absolute left-4 top-4 flex flex-col gap-3 pointer-events-none">
+      <div className="absolute left-3 sm:left-4 top-3 sm:top-4 flex flex-col gap-2 sm:gap-3 pointer-events-none z-20">
         <div className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-slate-900 px-3 py-2 border border-white/15 text-sm font-semibold shadow-lg">
           <Icon path={layers16} />
           <select
@@ -448,12 +451,12 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
       </div>
 
       <div
-        className="absolute left-4 right-4 bottom-4 pointer-events-none"
+        className="absolute left-2 right-2 sm:left-4 sm:right-4 bottom-3 sm:bottom-4 pointer-events-none z-10"
         id="tour-time-slider"
       >
         <div className="pointer-events-auto rounded-2xl bg-slate-950/85 border border-white/10 shadow-lg p-3 space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
               {(['day', 'week', 'month', 'year'] as const).map((step) => (
                 <button
                   key={step}
@@ -469,24 +472,51 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
                 </button>
               ))}
             </div>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center h-8 w-8 rounded-full border border-white/15 bg-white/10 text-slate-100 hover:bg-white/15 text-sm"
+              onClick={() => setSliderOpen((prev) => !prev)}
+              aria-label={sliderOpen ? 'Hide timeline' : 'Show timeline'}
+            >
+              <span aria-hidden="true">{sliderOpen ? 'v' : '^'}</span>
+            </button>
           </div>
-          <div
-            ref={timeSliderRef}
-            className="w-full [&_.esri-slider__range]:bg-cyan-400 [&_.esri-slider__segment]:bg-white/20 [&_.esri-time-slider]:bg-transparent"
-          ></div>
+          <div className={`${sliderOpen ? 'block' : 'hidden'}`}>
+            <div
+              ref={timeSliderRef}
+              className="w-full [&_.esri-slider__range]:bg-cyan-400 [&_.esri-slider__segment]:bg-white/20 [&_.esri-time-slider]:bg-transparent"
+            ></div>
+          </div>
         </div>
       </div>
 
-      <div className="absolute right-4 top-4 flex flex-col gap-3 pointer-events-none w-72 max-w-[80vw]">
-        <div className="pointer-events-auto rounded-xl border border-white/15 bg-slate-950/85 shadow-lg">
+      <div className="absolute inset-0 pointer-events-none z-20">
+        <div
+          className={`pointer-events-auto rounded-xl border border-white/15 bg-slate-950/85 shadow-lg w-[min(20rem,92vw)] sm:w-72 absolute right-3 top-[90px] sm:right-4 sm:top-4 transition-opacity ${
+            mobileSearchOpen ? 'block opacity-100' : 'hidden opacity-0 sm:block sm:opacity-100'
+          }`}
+        >
           <div ref={searchRef} className="p-2"></div>
         </div>
 
-        <div className="pointer-events-auto rounded-xl bg-slate-950/85 border border-white/10 shadow-lg p-3 space-y-2">
-          <div className="text-xs uppercase tracking-wide text-slate-400">
-            Legend
+        <div
+          className={`pointer-events-auto rounded-xl bg-slate-950/85 border border-white/10 shadow-lg p-3 space-y-2 w-[min(20rem,92vw)] sm:w-72 absolute right-3 top-[178px] sm:right-4 sm:top-[88px] transition-opacity ${
+            mobileLegendOpen ? 'block opacity-100' : 'hidden opacity-0 sm:block sm:opacity-100'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-xs uppercase tracking-wide text-slate-400">
+              Legend
+            </div>
+            <button
+              type="button"
+              className="sm:hidden text-[11px] px-2 py-1 rounded-md bg-white/10 text-slate-100 border border-white/10"
+              onClick={() => setMobileLegendOpen(false)}
+            >
+              Close
+            </button>
           </div>
-          <div className="max-h-48 overflow-y-auto divide-y divide-white/5">
+          <div className="max-h-40 sm:max-h-48 overflow-y-auto divide-y divide-white/5">
             {legendItems.map((item) => (
               <div
                 key={item.name}
@@ -507,8 +537,33 @@ const MapPanel = ({ data, onExtentChange }: Props) => {
         </div>
       </div>
 
+      <div className="absolute top-3 right-3 flex-col gap-2 pointer-events-none sm:hidden z-30">
+        <div className="flex flex-col gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => {
+              setMobileSearchOpen((prev) => !prev)
+              setMobileLegendOpen(false)
+            }}
+            className="inline-flex items-center gap-2 rounded-full bg-slate-900/90 border border-white/15 px-3 py-2 text-xs font-semibold text-slate-100 shadow-lg"
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileLegendOpen((prev) => !prev)
+              setMobileSearchOpen(false)
+            }}
+            className="inline-flex items-center gap-2 rounded-full bg-slate-900/90 border border-white/15 px-3 py-2 text-xs font-semibold text-slate-100 shadow-lg"
+          >
+            Legend
+          </button>
+        </div>
+      </div>
+
       {status && (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-4 pointer-events-none">
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-16 sm:bottom-4 pointer-events-none">
           <div className="pointer-events-auto rounded-full bg-slate-950/90 border border-white/10 px-4 py-2 text-xs font-semibold text-slate-100 shadow-lg">
             {status}
           </div>

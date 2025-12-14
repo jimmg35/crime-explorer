@@ -82,35 +82,39 @@ const KpiCards = ({
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {cards.map((card) => (
-        <div
-          key={card.label}
-          className="rounded-xl border border-white/10 bg-white/5 px-3 py-3 flex flex-col gap-1 shadow-sm"
-          style={card.label === t('kpi.range') ? { gridColumn: 'span 2' } : {}}
-        >
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-300">
-            <Icon path={card.icon} />
-            {card.label}
-          </div>
-          <div className="text-lg font-semibold text-white leading-tight">
-            {card.value}
-          </div>
-          {card.change && (
-            <div
-              className={`text-xs font-semibold ${
-                card.change.diff >= 0 ? 'text-emerald-300' : 'text-rose-300'
-              }`}
-            >
-              {card.change.diff >= 0 ? '+' : '-'}
-              {Math.abs(card.change.pct).toFixed(1)}% vs prev period
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {cards.map((card) => {
+        const isRangeCard = card.label === t('kpi.range')
+        return (
+          <div
+            key={card.label}
+            className={`rounded-xl border border-white/10 bg-white/5 px-3 py-3 flex flex-col gap-1 shadow-sm ${
+              isRangeCard ? 'sm:col-span-2' : ''
+            }`}
+          >
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-300">
+              <Icon path={card.icon} />
+              {card.label}
             </div>
-          )}
-          {card.meta && (
-            <div className="text-[11px] text-slate-400">{card.meta}</div>
-          )}
-        </div>
-      ))}
+            <div className="text-lg font-semibold text-white leading-tight">
+              {card.value}
+            </div>
+            {card.change && (
+              <div
+                className={`text-xs font-semibold ${
+                  card.change.diff >= 0 ? 'text-emerald-300' : 'text-rose-300'
+                }`}
+              >
+                {card.change.diff >= 0 ? '+' : '-'}
+                {Math.abs(card.change.pct).toFixed(1)}% vs prev period
+              </div>
+            )}
+            {card.meta && (
+              <div className="text-[11px] text-slate-400">{card.meta}</div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

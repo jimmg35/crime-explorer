@@ -95,7 +95,7 @@ const CrimeDashboard = ({ data }: Props) => {
     <div className="min-h-dvh h-dvh w-dvw bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
       <header
         id="tour-header"
-        className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-6 py-4 border-b border-white/10 bg-gradient-to-r from-slate-900 to-slate-950"
+        className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between px-4 sm:px-6 py-4 border-b border-white/10 bg-gradient-to-r from-slate-900 to-slate-950"
       >
         <div>
           <div className="text-lg font-semibold leading-tight">
@@ -103,12 +103,12 @@ const CrimeDashboard = ({ data }: Props) => {
           </div>
           <p className="text-sm text-slate-400">{t('app.subtitle')}</p>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 w-full lg:w-auto justify-start lg:justify-end">
           <a
             href="https://sdsc.fsu.edu/"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-green-100 bg-green-400/10 border border-green-400/50 rounded-full px-3 py-1 hover:bg-green-400/20 transition-colors"
+            className="inline-flex w-full sm:w-auto justify-center items-center gap-2 text-xs font-semibold text-green-100 bg-green-400/10 border border-green-400/50 rounded-full px-3 py-1 hover:bg-green-400/20 transition-colors"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_0_4px_rgba(74,222,128,0.15)]"></span>
             Spatial Data Science Center @ Florida State University
@@ -118,15 +118,15 @@ const CrimeDashboard = ({ data }: Props) => {
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 flex flex-col lg:flex-row gap-4 p-4 overflow-hidden">
+      <main className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 lg:gap-4 p-3 sm:p-4 overflow-auto lg:overflow-hidden">
         <section
           id="tour-map"
-          className="flex-1 min-h-0 rounded-2xl overflow-hidden border border-white/10 bg-slate-900/80 shadow-inner"
+          className="flex-1 min-h-[360px] lg:min-h-0 rounded-2xl overflow-hidden border border-white/10 bg-slate-900/80 shadow-inner"
         >
           <MapPanel data={data} onExtentChange={setViewExtent} />
         </section>
 
-        <aside className="w-full lg:w-[420px] flex flex-col gap-4 overflow-y-auto min-h-0 pr-1">
+        <aside className="w-full lg:w-[420px] flex flex-col gap-4 overflow-visible lg:overflow-y-auto lg:min-h-0 pr-0 lg:pr-1">
           <div id="tour-filters">
             <FiltersPanel
               categories={categoryTotals}
