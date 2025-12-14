@@ -1,12 +1,16 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-
 import useI18n from '@/lib/i18n/useI18n'
 import { FilterState } from '@/lib/state/types'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
+type CategoryOption = {
+  name: string
+  count: number
+}
 
 type Props = {
-  categories: string[]
+  categories: CategoryOption[]
   selectedCategories: string[]
   extentMode: FilterState['extentMode']
   onCategoriesChange: (value: string[]) => void
@@ -25,9 +29,14 @@ const FiltersPanel = ({
   const { t } = useI18n()
 
   const sortedCategories = useMemo(
-    () => [...categories].sort((a, b) => a.localeCompare(b)),
+    () =>
+      [...categories].sort((a, b) =>
+        b.count === a.count ? a.name.localeCompare(b.name) : b.count - a.count
+      ),
     [categories]
   )
+
+  const selectedCount = selectedCategories.length
 
   return (
     <div className="rounded-2xl bg-white/5 border border-white/10 p-4 shadow-sm">
@@ -35,6 +44,11 @@ const FiltersPanel = ({
         <div className="text-sm font-semibold text-slate-100">
           {t('filters.reset')}
         </div>
+        {selectedCount > 0 && (
+          <span className="mr-auto ml-3 inline-flex items-center rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+            {selectedCount} selected
+          </span>
+        )}
         <button
           type="button"
           className="text-xs font-semibold text-slate-200 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full"
@@ -96,7 +110,7 @@ const MultiSelect = ({
   placeholder,
   emptyLabel
 }: {
-  options: string[]
+  options: CategoryOption[]
   selected: string[]
   onChange: (next: string[]) => void
   placeholder: string
@@ -122,7 +136,7 @@ const MultiSelect = ({
   const filteredOptions = useMemo(() => {
     if (!search.trim()) return options
     return options.filter((opt) =>
-      opt.toLowerCase().includes(search.trim().toLowerCase())
+      opt.name.toLowerCase().includes(search.trim().toLowerCase())
     )
   }, [options, search])
 
@@ -172,7 +186,7 @@ const MultiSelect = ({
                 }}
                 aria-label={`Remove ${value}`}
               >
-                ×
+                x
               </span>
             </span>
           ))
@@ -200,18 +214,23 @@ const MultiSelect = ({
             ) : (
               filteredOptions.map((option) => (
                 <label
-                  key={option}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-slate-100 hover:bg-white/5 cursor-pointer"
+                  key={option.name}
+                  className="flex items-center justify-between gap-2 px-3 py-2 text-sm text-slate-100 hover:bg-white/5 cursor-pointer"
                   onMouseDown={(e) => e.preventDefault()}
                 >
-                  <input
-                    type="checkbox"
-                    className="rounded border-slate-500 text-cyan-400 bg-slate-900/60"
-                    checked={selected.includes(option)}
-                    onChange={() => toggleValue(option)}
-                  />
-                  <span className="truncate" title={option}>
-                    {option}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="rounded border-slate-500 text-cyan-400 bg-slate-900/60"
+                      checked={selected.includes(option.name)}
+                      onChange={() => toggleValue(option.name)}
+                    />
+                    <span className="truncate" title={option.name}>
+                      {option.name}
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-400 font-semibold">
+                    {option.count.toLocaleString()}
                   </span>
                 </label>
               ))

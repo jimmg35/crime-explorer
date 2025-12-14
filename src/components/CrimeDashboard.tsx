@@ -4,13 +4,13 @@ import { filterFeatures } from '@/lib/data/aggregations'
 import { CrimeDataset, ExtentBounds } from '@/lib/data/types'
 import useI18n from '@/lib/i18n/useI18n'
 import { useAppState } from '@/lib/state/AppStateContext'
-import dynamic from 'next/dynamic'
 import { useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
+import InteractiveTour from './InteractiveTour'
+import LanguageSwitch from './LanguageSwitch'
 import ChartsPanel from './charts/ChartsPanel'
 import FiltersPanel from './filters/FiltersPanel'
-import InteractiveTour from './InteractiveTour'
 import KpiCards from './kpi/KpiCards'
-import LanguageSwitch from './LanguageSwitch'
 
 const MapPanel = dynamic(() => import('./map/MapPanel'), {
   ssr: false
@@ -26,6 +26,18 @@ const CrimeDashboard = ({ data }: Props) => {
   const { t } = useI18n()
   const [viewExtent, setViewExtent] = useState<ExtentBounds | null>(null)
 
+  const categoryTotals = useMemo(() => {
+    const counts = new Map<string, number>()
+    data.features.forEach((feature) => {
+      const name = feature.offenseType
+      counts.set(name, (counts.get(name) || 0) + 1)
+    })
+    return data.categories.map((name) => ({
+      name,
+      count: counts.get(name) || 0
+    }))
+  }, [data.categories, data.features])
+
   const filteredFeatures = useMemo(
     () =>
       filterFeatures(
@@ -40,6 +52,30 @@ const CrimeDashboard = ({ data }: Props) => {
   const categoryCount = useMemo(
     () => new Set(filteredFeatures.map((f) => f.offenseType)).size,
     [filteredFeatures]
+  )
+
+  const previousTimeExtent = useMemo(() => {
+    const duration =
+      state.timeExtent.end.getTime() - state.timeExtent.start.getTime()
+    const start = new Date(state.timeExtent.start.getTime() - duration)
+    const end = new Date(state.timeExtent.start)
+    return { start, end }
+  }, [state.timeExtent])
+
+  const previousFilteredFeatures = useMemo(
+    () =>
+      filterFeatures(
+        data.features,
+        state.filters,
+        previousTimeExtent,
+        state.filters.extentMode === 'view' ? viewExtent : null
+      ),
+    [data.features, state.filters, previousTimeExtent, viewExtent]
+  )
+
+  const previousCategoryCount = useMemo(
+    () => new Set(previousFilteredFeatures.map((f) => f.offenseType)).size,
+    [previousFilteredFeatures]
   )
   const toggleCategoryFilter = (name: string) => {
     if (!name) return
@@ -93,7 +129,7 @@ const CrimeDashboard = ({ data }: Props) => {
         <aside className="w-full lg:w-[420px] flex flex-col gap-4 overflow-y-auto min-h-0 pr-1">
           <div id="tour-filters">
             <FiltersPanel
-              categories={data.categories}
+              categories={categoryTotals}
               selectedCategories={state.filters.categories}
               extentMode={state.filters.extentMode}
               onCategoriesChange={setCategories}
@@ -104,8 +140,11 @@ const CrimeDashboard = ({ data }: Props) => {
           <div id="tour-kpis">
             <KpiCards
               total={filteredFeatures.length}
+              previousTotal={previousFilteredFeatures.length}
               categoryCount={categoryCount}
+              previousCategoryCount={previousCategoryCount}
               timeExtent={state.timeExtent}
+              previousTimeExtent={previousTimeExtent}
             />
           </div>
           <div id="tour-charts">

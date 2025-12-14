@@ -1,12 +1,12 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import CrimeDashboard from '@/components/CrimeDashboard'
 import { loadCrimeData } from '@/lib/data/loadCrimeData'
 import { CrimeDataset } from '@/lib/data/types'
+import { type Lang, SUPPORTED_LANGS, translate } from '@/lib/i18n'
 import { AppStateProvider } from '@/lib/state/AppStateContext'
-import { SUPPORTED_LANGS, translate, type Lang } from '@/lib/i18n'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 const HomeContent = () => {
   const [data, setData] = useState<CrimeDataset | null>(null)

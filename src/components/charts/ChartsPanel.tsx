@@ -1,8 +1,8 @@
 'use client'
 
 import {
-  hourDistribution,
   timeSeries as buildTimeSeries,
+  hourDistribution,
   topCategories
 } from '@/lib/data/aggregations'
 import { CrimeFeature, TimeStep } from '@/lib/data/types'
@@ -30,10 +30,7 @@ const ChartsPanel = ({
     () => buildTimeSeries(features, timeStep),
     [features, timeStep]
   )
-  const topCategoryData = useMemo(
-    () => topCategories(features, 10),
-    [features]
-  )
+  const topCategoryData = useMemo(() => topCategories(features, 10), [features])
   const hourlyData = useMemo(() => hourDistribution(features), [features])
 
   const hasData = features.length > 0
@@ -47,11 +44,11 @@ const ChartsPanel = ({
         formatter: (params: { value: [number, number] }[]) => {
           const item = params?.[0]
           if (!item || !item.value) return ''
-          return `${formatDateForLocale(
-            new Date(item.value[0]),
-            lang,
-            { month: 'short', day: 'numeric', year: 'numeric' }
-          )}<br/>${item.value[1]}`
+          return `${formatDateForLocale(new Date(item.value[0]), lang, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          })}<br/>${item.value[1]}`
         }
       },
       xAxis: {
@@ -81,10 +78,7 @@ const ChartsPanel = ({
           areaStyle: {
             color: 'rgba(56, 189, 248, 0.25)'
           },
-          data: timeSeriesData.map((item) => [
-            item.time.getTime(),
-            item.count
-          ])
+          data: timeSeriesData.map((item) => [item.time.getTime(), item.count])
         }
       ]
     }),

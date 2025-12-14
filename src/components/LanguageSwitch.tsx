@@ -1,6 +1,6 @@
 'use client'
 
-import { SUPPORTED_LANGS, translate, type Lang } from '@/lib/i18n'
+import { type Lang, SUPPORTED_LANGS, translate } from '@/lib/i18n'
 import { useAppState } from '@/lib/state/AppStateContext'
 
 const LanguageSwitch = () => {
