@@ -97,9 +97,7 @@ export const loadCrimeData = async (): Promise<CrimeDataset> => {
 
     const timestamp = findTimestamp(props)
     const offenseType = findCategory(props)
-    const sheet = props[SHEET_FIELD]
-      ? String(props[SHEET_FIELD])
-      : 'Unknown'
+    const sheet = props[SHEET_FIELD] ? String(props[SHEET_FIELD]) : 'Unknown'
     const id = feature.id ? String(feature.id) : `feature-${index}`
 
     if (!coordinates || !timestamp) return
@@ -135,9 +133,9 @@ export const loadCrimeData = async (): Promise<CrimeDataset> => {
   const categories = Array.from(
     new Set(normalizedFeatures.map((f) => f.offenseType))
   ).sort((a, b) => a.localeCompare(b))
-  const sheets = Array.from(new Set(normalizedFeatures.map((f) => f.sheet))).sort(
-    (a, b) => a.localeCompare(b)
-  )
+  const sheets = Array.from(
+    new Set(normalizedFeatures.map((f) => f.sheet))
+  ).sort((a, b) => a.localeCompare(b))
 
   const blob = new Blob(
     [JSON.stringify({ ...json, features: geojsonFeatures })],

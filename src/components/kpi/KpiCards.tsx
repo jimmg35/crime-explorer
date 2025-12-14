@@ -1,35 +1,84 @@
 'use client'
 
-import { mapPin16 } from '@esri/calcite-ui-icons/js/mapPin16.js'
-import { pieChart16 } from '@esri/calcite-ui-icons/js/pieChart16.js'
-import { clock16 } from '@esri/calcite-ui-icons/js/clock16.js'
-
 import { TimeExtent } from '@/lib/data/types'
 import { formatDateForLocale } from '@/lib/i18n'
 import useI18n from '@/lib/i18n/useI18n'
+import { clock16 } from '@esri/calcite-ui-icons/js/clock16.js'
+import { mapPin16 } from '@esri/calcite-ui-icons/js/mapPin16.js'
+import { pieChart16 } from '@esri/calcite-ui-icons/js/pieChart16.js'
 
 type Props = {
   total: number
+  previousTotal: number
   categoryCount: number
+  previousCategoryCount: number
   timeExtent: TimeExtent
+  previousTimeExtent: TimeExtent
 }
 
-const KpiCards = ({ total, categoryCount, timeExtent }: Props) => {
+const KpiCards = ({
+  total,
+  previousTotal,
+  categoryCount,
+  previousCategoryCount,
+  timeExtent,
+  previousTimeExtent
+}: Props) => {
   const { lang, t } = useI18n()
+
   const rangeLabel = `${formatDateForLocale(timeExtent.start, lang, {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
-  })} – ${formatDateForLocale(timeExtent.end, lang, {
+  })} - ${formatDateForLocale(timeExtent.end, lang, {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
   })}`
 
+  const previousRangeLabel = `${formatDateForLocale(
+    previousTimeExtent.start,
+    lang,
+    {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }
+  )} - ${formatDateForLocale(previousTimeExtent.end, lang, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  })}`
+
+  const change = (current: number, prev: number) => {
+    if (prev === 0) return null
+    const diff = current - prev
+    const pct = (diff / prev) * 100
+    return { diff, pct }
+  }
+
+  const totalChange = change(total, previousTotal)
+  const categoriesChange = change(categoryCount, previousCategoryCount)
+
   const cards = [
-    { label: t('kpi.total'), value: total.toLocaleString(), icon: mapPin16 },
-    { label: t('kpi.categories'), value: categoryCount.toString(), icon: pieChart16 },
-    { label: t('kpi.range'), value: rangeLabel, icon: clock16 }
+    {
+      label: t('kpi.total'),
+      value: total.toLocaleString(),
+      icon: mapPin16,
+      change: totalChange
+    },
+    {
+      label: t('kpi.categories'),
+      value: categoryCount.toString(),
+      icon: pieChart16,
+      change: categoriesChange
+    },
+    {
+      label: t('kpi.range'),
+      value: rangeLabel,
+      icon: clock16,
+      meta: `Prev: ${previousRangeLabel}`
+    }
   ]
 
   return (
@@ -47,6 +96,19 @@ const KpiCards = ({ total, categoryCount, timeExtent }: Props) => {
           <div className="text-lg font-semibold text-white leading-tight">
             {card.value}
           </div>
+          {card.change && (
+            <div
+              className={`text-xs font-semibold ${
+                card.change.diff >= 0 ? 'text-emerald-300' : 'text-rose-300'
+              }`}
+            >
+              {card.change.diff >= 0 ? '+' : '-'}
+              {Math.abs(card.change.pct).toFixed(1)}% vs prev period
+            </div>
+          )}
+          {card.meta && (
+            <div className="text-[11px] text-slate-400">{card.meta}</div>
+          )}
         </div>
       ))}
     </div>

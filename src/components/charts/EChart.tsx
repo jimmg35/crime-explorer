@@ -1,7 +1,7 @@
 'use client'
 
-import * as echarts from 'echarts'
 import { useEffect, useRef } from 'react'
+import * as echarts from 'echarts'
 
 type Props = {
   option: echarts.EChartsCoreOption
